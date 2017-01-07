@@ -2,6 +2,7 @@
 #include "neko.h"
 #include "outils.h"
 #include "buch.h"
+#include "texte.h"
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -34,15 +35,29 @@ void start(t_lbstat *lib, void **data)
 void command(t_lbstat *lib, void **data, char *command)
 { t_tagseite *seite = (t_tagseite *)(*data);
   if (!NCMP(command, "neko buch ", 10))
-  { char options = 0;
+  { char option = 0;
     command += 10;
-    command = get_options(command, &options); }
-  else if (!NCMP(command, "neko buch", 9))
+    command = get_option(command, &option);
+    if (option == Erinnerung)
+    { PFD(command, fd); }
+    else if (option == Frage)
+    {}
+    else if (option == Antwort)
+    {}
+    else
+    { error_option(lib); }}
+  else if (!NCMP(command, "neko buch\0", 10))
   {}
 }
 
 void end(t_lbstat *lib, void **data)
 { t_tagseite *seite = (t_tagseite *)(*data);
+  PFD("Déconnexion du tty: ", (*seite).fd);
+  PFD(ttyname(0), (*seite).fd);
+  PFD("\nHeure: ", (*seite).fd);
+  time_t k = time(NULL);
+  char *tmp = ctime(&k);
+  PFD(&tmp[20], (*seite).fd);
   if ((*seite).fd > 2)
   { close((*seite).fd); }}
 

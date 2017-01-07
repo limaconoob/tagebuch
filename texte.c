@@ -16,7 +16,7 @@ void push_line(char *message_bullets, char *descriptif, int len, int *mes)
   *mes += 16; }
 
 // Ajoute du texte dans le buffer sans se soucier du pading
-// Restore le padding à la fin
+// Restaure le padding à la fin
 void push_text(char *message_bullets, char *texte, int *mes)
 { int len = LEN(texte);
   int i = 0;
@@ -40,6 +40,15 @@ void push_front(char *message_bullets, char *texte, int *mes)
     i += 1; }
   *mes += i; }
 
-// Restore le padding
+// Restaure le padding
 void adjust(int *mes)
 { *mes += 16 - (*mes % 16); }
+
+// Actualise l'info-bulle avec un nouveau message
+void neko_say(char *bulle, char *message)
+{ BZE(bulle, SPEC_CHARACTER_MAX);
+  if (message)
+  { int i = 0;
+    while (i < SPEC_CHARACTER_MAX && message[i])
+    { bulle[i] = message[i]
+      i += 1; }}}

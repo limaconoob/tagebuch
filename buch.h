@@ -1,18 +1,19 @@
 #ifndef BUCH_H
 #define BUCH_H
 
+void dir_path(char *neko);
 int tag_seite(char flag);
 
 typedef enum e_flags
 { Build,
   Start,
   Pause,
-  } t_flags;
+  Wait, } t_flags;
 
 typedef enum e_options
-{ Frage = 0x01,
-  Antwort = 0x02,
-  Erinnerung = 0x04,
+{ Frage = 102,
+  Antwort = 97,
+  Erinnerung = 101,
   } t_flags;
 
 typedef struct s_tagseite

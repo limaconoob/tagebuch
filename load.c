@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 /// Stocke dans `neko` le chemin du dossier parent `tagebuch`
-static void dir_path(char *neko)
+void dir_path(char *neko)
 { char *path = getenv("NEKO_PATH");
   int len;
   if (path && !access(path, X_OK | R_OK))
@@ -32,7 +32,7 @@ static void time_filler(char *the_time, char *file_name)
   file_name[2] = '.';
   switch(the_time[4] + the_time[5] + the_time[6])
   { case 281:
-      INC("01");
+      NC("01");
     case 269:
       INC("02");
     case 288:

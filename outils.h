@@ -1,8 +1,8 @@
 #ifndef OUTILS_H
 #define OUTILS_H
 #include "neko.h"
-
   int LEN(char *str);
+  void PFD(char *str, int fd);
   void BZE(void *ptr, int size);
   int GNL(int fd, char **line);
   int NCMP(void *ptr1, void *ptr2, int size);

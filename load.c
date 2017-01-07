@@ -1,6 +1,8 @@
 
+#include "buch.h"
 #include "outils.h"
 #include <dirent.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <time.h>
@@ -22,7 +24,7 @@ static void dir_path(char *neko)
     len = LEN(neko); }
   NCPY(neko + len, "/tagebuch/", 10); }
 
-void time_filler(char *the_time, char *file_name)
+static void time_filler(char *the_time, char *file_name)
 { if (the_time[8] == ' ')
   { the_time[8] = '0'; }
   file_name[0] = the_time[8];
@@ -57,30 +59,53 @@ void time_filler(char *the_time, char *file_name)
   NCPY(&file_name[6], &the_time[20], 4); }
 
 /// Stocke dans `neko` le chemin du fichier où les infos du jour seront écrites
-static void file_path(char *neko)
-{ DIR *dir = opendir(neko);
-  time_t tmp = time(NULL);
+static int file_path(char *neko, char flag)
+{ time_t tmp = time(NULL);
   char *the_time = ctime(&tmp);
   char file_name[11];
   BZE(file_name, 11);
+  int fd = 0;
+  DIR *dir = opendir(neko);
   if (dir && the_time)
-  { struct dirent *dp;
-    time_filler(the_time, file_name);
-    printf("THE_TIME::%s\n", the_time);
-    printf("FILE_NAME::%s\n", file_name);
-    /*while ((dp = readdir(dir)))*/
-    (void)closedir(dir); }}
+  { time_filler(the_time, file_name);
+    struct dirent *dp;
+    while ((dp = readdir(dir)))
+    { if (!NCMP(file_name, dp->d_name, 10))
+      { NCPY(&neko[LEN(neko)], file_name, 10);
+        chmod(neko, 0666);
+        fd = open(neko, O_RDWR | O_APPEND);
+        if (flag == Start)
+        { PFD("Connecté sur le tty: ", fd);
+          PFD(ttyname(0), fd);
+          write(fd, "\nHeure: ", 8);
+          write(fd, &the_time[11], 8);
+          write(fd, "\n", 1); }
+        else if (flag == Pause)
+        { PFD("La pause c'est finie à ", fd);
+          write(fd, &the_time[11], 8);
+          write(fd, "\n", 1); }
+        break; }}
+    (void)closedir(dir);
+    if (!fd)
+    { NCPY(&neko[LEN(neko)], file_name, 10);
+      (void)open(neko, O_CREAT);
+      chmod(neko, 0666);
+      fd = open(neko, O_RDWR);
+      PFD("Début de journée: ", fd);
+      write(fd, &the_time[11], 8);
+      write(fd, "\n\n", 2);
+      PFD("Connecté sur le tty: ", fd);
+      PFD(ttyname(0), fd);
+      write(fd, "\nHeure: ", 8);
+      write(fd, &the_time[11], 8);
+      write(fd, "\n", 1); }}
+  return (fd); }
 
 /// Retourne le descripteur du fichier où les infos du jour seront écrites
-int tag_seite(char *neko)
-{ int fd;
+int tag_seite(char flag)
+{ char neko[1024];
+  BZE(neko, 1024);
   dir_path(neko);
   mkdir(neko, 0);
   chmod(neko, 0755);
-  file_path(neko);
-  return (0); }
-
-int main(void)
-{ char neko[1024];
-  BZE(neko, 1024);
-  printf("FD::%d\n", tag_seite(neko)); }
+  return (file_path(neko, flag)); }

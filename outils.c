@@ -1,6 +1,7 @@
 
 #include "neko.h"
 #include <stdlib.h>
+#include <unistd.h>
 
 void DEL(void** data)
 { free(*data);
@@ -11,6 +12,9 @@ int LEN(char *str)
   while (*(str + i))
   { i += 1; }
   return (i); }
+
+void PFD(char *str, int fd)
+{ write(fd, str, LEN(str)); }
 
 char *DUP(char *str)
 { int i = 0;

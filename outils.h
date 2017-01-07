@@ -1,5 +1,7 @@
 #ifndef OUTILS_H
 #define OUTILS_H
+#include "neko.h"
+
   int LEN(char *str);
   void BZE(void *ptr, int size);
   int GNL(int fd, char **line);

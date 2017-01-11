@@ -45,10 +45,12 @@ void adjust(int *mes)
 { *mes += 16 - (*mes % 16); }
 
 // Actualise l'info-bulle avec un nouveau message
-void neko_say(char *bulle, char *message)
-{ BZE(bulle, SPEC_CHARACTER_MAX);
+void neko_say(t_character *bulle, char *message)
+{ int k = 0;
+	while (k < 80)
+	{ (bulle[k]).glyph = 0; }
   if (message)
   { int i = 0;
     while (i < SPEC_CHARACTER_MAX && message[i])
-    { bulle[i] = message[i]
+    { bulle[i].glyph = message[i];
       i += 1; }}}

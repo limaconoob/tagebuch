@@ -64,27 +64,25 @@ static int file_path(char *neko, char flag)
   char *the_time = ctime(&tmp);
   char file_name[11];
   BZE(file_name, 11);
-  int fd = 0;
+  int fd;
   time_filler(the_time, file_name);
 	NCPY(&neko[LEN(neko)], file_name, 10);
+	fd = open(neko, O_CREAT | O_EXCL);
   chmod(neko, 0666);
-     fd = open(neko, O_RDWR | O_APPEND);
-     if (flag == Start)
-     { PFD("Connecté sur le tty: ", fd);
-				PFD(ttyname(0), fd);
-				write(fd, "\nHeure: ", 8);
-				write(fd, &the_time[11], 8);
-				write(fd, "\n", 1); }
-			else if (flag == Pause)
-			{ PFD("La pause c'est finie à ", fd);
-				write(fd, &the_time[11], 8);
-				write(fd, "\n", 1); }
-			break; }
-	if (!fd)
-	{
-		(void)open(neko, O_CREAT);
-		chmod(neko, 0666);
-		fd = open(neko, O_RDWR);
+	if (fd == -1)
+  { fd = open(neko, O_RDWR | O_APPEND);
+    if (flag == Start)
+    { PFD("Connecté sur le tty: ", fd);
+			PFD(ttyname(0), fd);
+			write(fd, "\nHeure: ", 8);
+			write(fd, &the_time[11], 8);
+			write(fd, "\n", 1); }
+		else if (flag == Pause)
+		{ PFD("La pause c'est finie à ", fd);
+			write(fd, &the_time[11], 8);
+			write(fd, "\n", 1); }}
+	else
+  { fd = open(neko, O_RDWR | O_APPEND);
 		PFD("Début de journée: ", fd);
 		write(fd, &the_time[11], 8);
 		write(fd, "\n\n", 2);
@@ -112,4 +110,5 @@ int zuh_fragen(char flag)
   chmod(neko, 0755);
 	NCPY(&neko[LEN(neko)], "fragen", 6);
   open(neko, O_CREAT);
-	return(open(neko, O_RDWR)); }
+  chmod(neko, 0666);
+	return(open(neko, O_RDWR | O_APPEND)); }

@@ -20,15 +20,15 @@
 void build(t_lbstat *lib, void **data)
 { static t_tagseite seite[1];
   (*seite).flag = Build;
-  (*seite).fd = tag_seite(Build);
 	(*seite).frage = zuh_fragen(Build);
+  (*seite).fd = tag_seite(Build, (*seite).frage);
   *data = &seite; }
 
 void start(t_lbstat *lib, void **data)
 { static t_tagseite seite[1];
   (*seite).flag = Start;
-  (*seite).fd = tag_seite(Start);
 	(*seite).frage = zuh_fragen(Start);
+  (*seite).fd = tag_seite(Start, (*seite).frage);
   *data = &seite; }
 
 void command(t_lbstat *lib, void **data, char *command)

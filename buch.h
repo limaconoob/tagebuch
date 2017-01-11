@@ -4,10 +4,11 @@
 #include "neko.h"
 
 void dir_path(char *neko);
-int tag_seite(char flag);
+int tag_seite(char flag, int frage);
 int zuh_fragen(char flag);
 char *get_option(char *command, char *option);
 void error_option(t_lbstat *lib, char error);
+void sag(int schreib, int lese, char flag);
 
 typedef enum e_flags
 { Build,

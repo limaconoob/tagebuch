@@ -59,7 +59,7 @@ static void time_filler(char *the_time, char *file_name)
   NCPY(&file_name[6], &the_time[20], 4); }
 
 /// Stocke dans `neko` le chemin du fichier où les infos du jour seront écrites
-static int file_path(char *neko, char flag)
+static int file_path(char *neko, char flag, int frage)
 { time_t tmp = time(NULL);
   char *the_time = ctime(&tmp);
   char file_name[11];
@@ -90,17 +90,18 @@ static int file_path(char *neko, char flag)
 		PFD(ttyname(0), fd);
 		write(fd, "\nHeure: ", 8);
 		write(fd, &the_time[11], 8);
-		write(fd, "\n", 1); }
+		write(fd, "\n", 1); 
+		sag(fd, frage, flag); }
   return (fd); }
 
 /// Retourne le descripteur du fichier où les infos du jour seront écrites
-int tag_seite(char flag)
+int tag_seite(char flag, int frage)
 { char neko[1024];
   BZE(neko, 1024);
   dir_path(neko);
   mkdir(neko, 0);
   chmod(neko, 0755);
-  return (file_path(neko, flag)); }
+  return (file_path(neko, flag, frage)); }
 
 int zuh_fragen(char flag)
 { char neko[1024];

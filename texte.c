@@ -47,8 +47,9 @@ void adjust(int *mes)
 // Actualise l'info-bulle avec un nouveau message
 void neko_say(t_character *bulle, char *message)
 { int k = 0;
-	while (k < 80)
-	{ (bulle[k]).glyph = 0; }
+	while (k < SPEC_CHARACTER_MAX)
+	{ (bulle[k]).glyph = 0;
+    k += 1; }
   if (message)
   { int i = 0;
     while (i < SPEC_CHARACTER_MAX && message[i])

@@ -5,7 +5,7 @@
 
 void dir_path(char *neko);
 int tag_seite(char flag, int frage);
-int zuh_fragen(char flag);
+int openner(char *file);
 char *get_option(char *command, char *option);
 void error_option(t_lbstat *lib, char error);
 void sag(int schreib, int lese, char flag);
@@ -18,14 +18,15 @@ typedef enum e_flags
   Wait, } t_flags;
 
 typedef enum e_options
-{ Frage = 102,
-  Help = 104,
+{ Help = 104,
   Erinnerung = 101,
+  Frage = 102,
   } t_options;
 
 typedef struct s_tagseite
 { int fd;
 	int frage;
+	int erinn;
   int flag; } t_tagseite;
 
 #endif

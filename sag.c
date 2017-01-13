@@ -1,10 +1,32 @@
 
 #include "buch.h"
 #include "outils.h"
+#include <stdlib.h>
 #include <unistd.h>
 
+typedef struct s_fckup
+{ char *line;
+  struct s_fckup *next; } t_fckup;
+
 void sag(int schreib, int lese, char flag)
-{ char **line;
+{ t_fckup *fck[1];
+  *fck = NULL;
+  t_fckup *tmp;
+  t_fckup *tmp2;
+  char **line;
+
+	while (GNL(lese, line))
+	{ if (*fck)
+    { (*tmp).next = (t_fckup*)malloc(sizeof(t_fckup));
+      tmp = (*tmp).next;
+      (*tmp).line = *line;
+      (*tmp).next = NULL; }
+    else
+    { tmp = (t_fckup*)malloc(sizeof(t_fckup));
+      (*tmp).line = *line;
+      (*tmp).next = NULL;
+      *fck = tmp; }}
+
 	write(0, "\x1B[?1049h\x1B[2J\x1B[H", 16);
 	if (flag == Start)
 /// NEED + 1 Dans le message s'il n'y a pas de '\n' et s'il y en a aussi
@@ -22,18 +44,23 @@ void sag(int schreib, int lese, char flag)
 	//					die Anweisung \"Antwort > ++\"\n"
 	{ ; }
 
-	while (GNL(lese, line))
-	{ write(schreib, "  Frage > ", 10);
-		PFD(*line, schreib);
-		PFD("\n", schreib);
-		//Neko say *line
-		write(schreib, "Antwort > ", 10);
-		write(0, "Antwort > ", 10);
-		DEL((void**)line);
-		GNL(1, line);
-		PFD(*line, schreib);
-		PFD("\n", schreib);
-		DEL((void**)line); }
+  if (*fck)
+  { tmp = *fck;
+    while (tmp)
+    { write(schreib, "  Frage > ", 10);
+		  PFD((*tmp).line, schreib);
+		  PFD("\n", schreib);
+		  //Neko say *line
+		  write(schreib, "Antwort > ", 10);
+		  write(0, "Antwort > ", 10);
+		  GNL(1, line);
+		  PFD(*line, schreib);
+		  PFD("\n", schreib);
+		  DEL((void**)line);
+      tmp2 = (*tmp).next;
+      free((*tmp).line);
+      free(tmp);
+      tmp = tmp2; }}
 	//Neko Happy Bust
 	//Neko say "Ich danke dir für diese Antworten!\n
 	//					Wenn Sie Fragen hinzufügen oder mehr,\n
@@ -41,4 +68,3 @@ void sag(int schreib, int lese, char flag)
 	//					in dein Shell für mehr Informationen.\n
 	write(0, "\x1B[2J\x1B[H\x1B[?1049l", 16);
 }
-

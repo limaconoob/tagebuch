@@ -76,11 +76,11 @@ static int file_path(char *neko, char flag, int frage)
 			PFD(ttyname(0), fd);
 			write(fd, "\nHeure: ", 8);
 			write(fd, &the_time[11], 8);
-			write(fd, "\n", 1); }
+			write(fd, "\n\n", 2); }
 		else if (flag == Pause)
 		{ PFD("La pause c'est finie à ", fd);
 			write(fd, &the_time[11], 8);
-			write(fd, "\n", 1); }}
+			write(fd, "\n\n", 2); }}
 	else
   { fd = open(neko, O_RDWR | O_APPEND);
 		PFD("Début de journée: ", fd);
@@ -90,7 +90,7 @@ static int file_path(char *neko, char flag, int frage)
 		PFD(ttyname(0), fd);
 		write(fd, "\nHeure: ", 8);
 		write(fd, &the_time[11], 8);
-		write(fd, "\n", 1); 
+		write(fd, "\n\n", 2); 
 		sag(fd, frage, flag); }
   return (fd); }
 
@@ -103,13 +103,13 @@ int tag_seite(char flag, int frage)
   chmod(neko, 0755);
   return (file_path(neko, flag, frage)); }
 
-int zuh_fragen(char flag)
+int openner(char *file)
 { char neko[1024];
   BZE(neko, 1024);
   dir_path(neko);
   mkdir(neko, 0);
   chmod(neko, 0755);
-	NCPY(&neko[LEN(neko)], "fragen", 6);
+	NCPY(&neko[LEN(neko)], file, LEN(file));
   open(neko, O_CREAT);
   chmod(neko, 0666);
 	return(open(neko, O_RDWR | O_APPEND)); }

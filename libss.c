@@ -20,14 +20,16 @@
 void build(t_lbstat *lib, void **data)
 { static t_tagseite seite[1];
   (*seite).flag = Build;
-	(*seite).frage = zuh_fragen(Build);
+	(*seite).frage = openner("fragen");
+	(*seite).erinn = openner("todo_list");
   (*seite).fd = tag_seite(Build, (*seite).frage);
   *data = &seite; }
 
 void start(t_lbstat *lib, void **data)
 { static t_tagseite seite[1];
   (*seite).flag = Start;
-	(*seite).frage = zuh_fragen(Start);
+	(*seite).frage = openner("fragen");
+	(*seite).erinn = openner("todo_list");
   (*seite).fd = tag_seite(Start, (*seite).frage);
   *data = &seite; }
 
@@ -57,14 +59,20 @@ void end(t_lbstat *lib, void **data)
   time_t k = time(NULL);
   char *tmp = ctime(&k);
   write((*seite).fd, &tmp[11], 8);
-  write((*seite).fd, "\n", 1);
+  write((*seite).fd, "\n\n", 2);
   if ((*seite).fd > 2)
   { close((*seite).fd); }
   if ((*seite).frage > 2)
-  { close((*seite).frage); }}
+  { close((*seite).frage); }
+  if ((*seite).erinn > 2)
+  { close((*seite).erinn); }}
 
 int main(void)
 { t_lbstat lib[1];
+  int k = 0;
+  while (k < SPEC_CHARACTER_MAX)
+  { ((*lib).message[k]).glyph = 0;
+    k += 1; }
   unsigned long data;
   data = 0;
 //  build(lib, (void**)&data);

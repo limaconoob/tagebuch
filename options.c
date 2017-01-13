@@ -7,9 +7,12 @@
 void error_option(t_lbstat *lib, char error)
 { char message[SPEC_CHARACTER_MAX];
   BZE(message, SPEC_CHARACTER_MAX);
+  // Neko say "Ich kenne nicht das Option: "
+  // Neko say error
+  // Neko say für den Tagebuch-Modul
   NCPY(message, "Je ne connais   pas l'option '", 30);
   message[30] = error;
-  NCPY(&message[31], "'pour le module  Neko Tagebuch!  ", 33);
+  NCPY(&message[31], "' pour le module  Neko Tagebuch!  ", 33);
   NCPY(&message[63], "", 16);
   neko_say((*lib).message, message); }
 

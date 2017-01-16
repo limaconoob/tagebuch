@@ -2,56 +2,66 @@
 #include "neko.h"
 #include "outils.h"
 
-// Insère une ligne vide
-void push_blank(int *mes)
-{ *mes += 16; }
+#include <stdio.h>
 
-// Insère une ligne de texte formatée
-void push_line(char *message_bullets, char *descriptif, int len, int *mes)
-{ if (len > 16)
-  { len = 16; }
-  if (*mes + 16 >= 1024)
+// Insère une ligne vide
+void push_blank(char *message_bullets, int *mes)
+{ message_bullets[*mes] = '\n';
+  *mes += 1; }
+
+// Insère une ligne de texte avec une nouvelle ligne
+void push_line(char *message_bullets, char *descriptif, int *mes)
+{ int len = LEN(descriptif);
+  if (*mes + len + 1 >= 1024)
   { return; }
   NCPY(&(message_bullets[*mes]), descriptif, len);
-  *mes += 16; }
+  NCPY(&(message_bullets[*mes + len]), "\n", 1);
+  *mes += len + 1; }
 
-// Ajoute du texte dans le buffer sans se soucier du pading
-// Restaure le padding à la fin
-void push_text(char *message_bullets, char *texte, int *mes)
-{ int len = LEN(texte);
-  int i = 0;
+// Insère une ligne de texte formattée et avec une nouvelle ligne
+void push_sized(char *message_bullets, char *descriptif, int len, int *mes)
+{ int k = LEN(descriptif);
+  if (k < len)
+  { len = k; }
+  if (*mes + len + 1 >= 1024)
+  { return; }
+  NCPY(&(message_bullets[*mes]), descriptif, len);
+  NCPY(&(message_bullets[*mes + len]), "\n", 1);
+  *mes += len + 1; }
+
+// Insère une ligne de texte
+void push_front(char *message_bullets, char *descriptif, int *mes)
+{ int len = LEN(descriptif);
   if (*mes + len >= 1024)
-  { len = 1024 - *mes; }
-  while (i < len)
-  { message_bullets[*mes + i] = texte[i];
-    i += 1; }
-  while (i % 16 != 0)
-  { i += 1; }
-  *mes += i; }
+  { return; }
+  NCPY(&(message_bullets[*mes]), descriptif, len);
+  *mes += len; }
 
-// Ajoute du texte dans le buffer sans se soucier du pading
-void push_front(char *message_bullets, char *texte, int *mes)
-{ int len = LEN(texte);
-  int i = 0;
-  if (*mes + len >= 1024)
-  { len = 1024 - *mes; }
-  while (i < len)
-  { message_bullets[*mes + i] = texte[i];
-    i += 1; }
-  *mes += i; }
+// Insère une ligne de texte formattée
+void push_part(char *message_bullets, char *descriptif, int len, int *mes)
+{ if (*mes + len >= 1024)
+  { return; }
+  NCPY(&(message_bullets[*mes]), descriptif, len);
+  *mes += len; }
 
-// Restaure le padding
-void adjust(int *mes)
-{ *mes += 16 - (*mes % 16); }
+// Nettoie l'info-bulle avec un nouveau message
+void clear_bulle(t_character *bulle)
+{ int i = 0;
+  while (i < SPEC_CHARACTER_MAX)
+  { (bulle[i]).glyph = 0;
+    i += 1; }}
 
 // Actualise l'info-bulle avec un nouveau message
 void neko_say(t_character *bulle, char *message)
-{ int k = 0;
-	while (k < SPEC_CHARACTER_MAX)
-	{ (bulle[k]).glyph = 0;
-    k += 1; }
+{ int i;
+  clear_bulle(bulle);
+  i = 0;
   if (message)
-  { int i = 0;
-    while (i < SPEC_CHARACTER_MAX && message[i])
-    { bulle[i].glyph = message[i];
+  { while (i < SPEC_CHARACTER_MAX)
+    { (bulle[i]).glyph = message[i];
+      i += 1; }
+    i = 0;
+    while (i < SPEC_CHARACTER_MAX)
+    { if ((bulle[i]).glyph > 126 || ((bulle[i]).glyph < 32 && (bulle[i]).glyph != 10))
+      { (bulle[i]).glyph = 0; }
       i += 1; }}}

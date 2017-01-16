@@ -129,6 +129,7 @@ typedef struct s_library_state {
 
 void start(t_lbstat *lib, void **data);
 void idle(t_lbstat *lib, void **data);
+void command(t_lbstat *lib, void **data, char *command);
 void end(t_lbstat *lib, void **data);
 
 #endif

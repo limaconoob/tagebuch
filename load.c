@@ -59,7 +59,7 @@ static void time_filler(char *the_time, char *file_name)
   NCPY(&file_name[6], &the_time[20], 4); }
 
 /// Stocke dans `neko` le chemin du fichier où les infos du jour seront écrites
-static int file_path(char *neko, char flag, int frage)
+static int file_path(char *neko, t_cdir *seite)
 { time_t tmp = time(NULL);
   char *the_time = ctime(&tmp);
   char file_name[11];
@@ -70,38 +70,43 @@ static int file_path(char *neko, char flag, int frage)
 	fd = open(neko, O_CREAT | O_EXCL);
   chmod(neko, 0666);
 	if (fd == -1)
-  { fd = open(neko, O_RDWR | O_APPEND);
-    if (flag == Start)
-    { PFD("Connecté sur le tty: ", fd);
+  { (*seite).fd = open(neko, O_RDWR | O_APPEND);
+    if ((*seite).flag == Start)
+    { write((*seite).fd, "(", 1);
+		  write((*seite).fd, &the_time[11], 8);
+      PFD(") ' Connecté sur le tty: ", fd);
 			PFD(ttyname(0), fd);
-			write(fd, "\nHeure: ", 8);
-			write(fd, &the_time[11], 8);
-			write(fd, "\n\n", 2); }
-		else if (flag == Pause)
-		{ PFD("La pause c'est finie à ", fd);
-			write(fd, &the_time[11], 8);
-			write(fd, "\n\n", 2); }}
+			write((*seite).fd, "\n", 1); }
+		else if ((*seite).flag == Pause)
+    { write((*seite).fd, "(", 1);
+			write((*seite).fd, &the_time[11], 8);
+      PFD(") ' Fin de la pause", fd);
+			write((*seite).fd, "\n", 1); }}
 	else
-  { fd = open(neko, O_RDWR | O_APPEND);
-		PFD("Début de journée: ", fd);
-		write(fd, &the_time[11], 8);
-		write(fd, "\n\n", 2);
-		PFD("Connecté sur le tty: ", fd);
-		PFD(ttyname(0), fd);
-		write(fd, "\nHeure: ", 8);
-		write(fd, &the_time[11], 8);
-		write(fd, "\n\n", 2); 
-		sag(fd, frage, flag); }
-  return (fd); }
+  { (*seite).fd = open(neko, O_RDWR | O_APPEND);
+    write((*seite).fd, "(", 1);
+		write((*seite).fd, &the_time[11], 8);
+		PFD(") ' Début de journée\n(", (*seite).fd);
+		write((*seite).fd, &the_time[11], 8);
+		PFD(") ' Connecté sur le tty: ", (*seite).fd);
+		PFD(ttyname(0), (*seite).fd);
+		write((*seite).fd, "\n", 1); 
+    sag((*seite).fd, (*seite).frage, (*seite).flag, (*seite).fragen);
+    //Neko Love Bust
+    (*lib).neko.position.cardinal = UpperRight;
+    (*lib).infobulle.cardinal = Left;
+    (*lib).lock ^= 1;
+    neko_say((*lib).infobulle.message, "Ich wolle eine kleine Tagebuch machen, so ich mochte Ihnen ein paar Fragen stellen!\nSie konnen mir antworten durch schreiben und dann Enter drücken.\nSie konnen verlassen die Modul mit die Anweisung \"Antwort > ++\"\n\nWeiter Enter druck"); }
+  return ((*seite).fd); }
 
 /// Retourne le descripteur du fichier où les infos du jour seront écrites
-int tag_seite(char flag, int frage)
+int tag_seite(t_cdir *seite)
 { char neko[1024];
   BZE(neko, 1024);
   dir_path(neko);
   mkdir(neko, 0);
   chmod(neko, 0755);
-  return (file_path(neko, flag, frage)); }
+  return (file_path(neko, seite)); }
 
 int openner(char *file)
 { char neko[1024];

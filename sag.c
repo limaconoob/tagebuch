@@ -8,9 +8,8 @@ typedef struct s_fckup
 { char *line;
   struct s_fckup *next; } t_fckup;
 
-void sag(int schreib, int lese, char flag)
-{ static t_fckup *fck[1];
-  *fck = NULL;
+void sag(int schreib, int lese, char flag, t_fckup **fck)
+{ *fck = NULL;
   t_fckup *tmp;
   t_fckup *tmp2;
   char *line[1];

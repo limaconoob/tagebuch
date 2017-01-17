@@ -2,14 +2,17 @@
 void command(t_lbstat *lib, void **data, char *command)
 { t_tagseite *seite = (t_tagseite *)(*data);
   static int m = 0;
-  if (m == 0 && *fck)
-  { tmp = *fck;
-    write(0, "\x1B[H", 3);
+  static t_fck *fragen = NULL;
+  if (m == 0)
+  { fragen = sag((*seite).fd, (*seite).frage, (*seite).flag);
     //Neko Love Bust
     (*lib).neko.position.cardinal = UpperRight;
     (*lib).infobulle.cardinal = Left;
     (*lib).lock ^= 1;
     neko_say((*lib).infobulle.message, "Ich wolle eine kleine Tagebuch machen, so ich mochte Ihnen ein paar Fragen stellen\nSie konnen mir antworten durch schreiben und dann Enter drücken.\nSie konnen verlassen die Modul mit die Anweisung \"Antwort > ++\"\n\nEnter druck"
+
+/*
+    write(0, "\x1B[H", 3);
     while (tmp)
     { write(schreib, "  Frage > ", 10);
       PFD((*tmp).line, schreib);
@@ -25,6 +28,8 @@ void command(t_lbstat *lib, void **data, char *command)
       free((*tmp).line);
       free(tmp);
       tmp = tmp2; }
+*/
+
     m = 1; }
   else if (m == 1)
   { neko_say((*lib).infobulle.message, "Ich danke dir fur diese Antworten!\nWenn Sie Fragen hinzufugen oder mehr,\nSie konnen \"neko buch -h\" schreiben in dein Shell,\nso dass ich mehr Informationen Ihnen geben.\n");
